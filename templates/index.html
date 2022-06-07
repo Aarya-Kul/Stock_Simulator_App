@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Stock Portfolio
+{% endblock %}
+
+{% block main %}
+    <table class="center">
+        <caption>Your Stock Portfolio</caption>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Total Shares</th>
+                <th>Total Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in index %}
+            <tr>
+                <td>{{ stock[0] }}</td>
+                <td>{{ stock[1] }}</td>
+                <td>${{ stock[2] }}</td>
+                <td>{{ stock[3] }}</td>
+                <td>${{ stock[4] }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <th class="header" colspan="4">Cash Balance (USD)</td>
+                <td colspan="2">${{ user_cash }}</td>
+            </tr>
+            <tr>
+                <th class="header" colspan="4">Grand Total (USD)</td>
+                <td colspan="2">${{ grand_total }}</td>
+            </tr>
+
+        </tbody>
+
+    </table>
+{% endblock %}
