@@ -40,8 +40,8 @@ def lookup(symbol):
 
     # Contact API
     try:
-        # api_key = os.environ.get("API_KEY")
-        url = f"https://cloud.iexapis.com/stable/stock/{urllib.parse.quote_plus(symbol)}/quote?token={apikey.APIKEYvalue}"
+        api_key = os.environ.get("IEX_TOKEN")
+        url = f"https://cloud.iexapis.com/stable/stock/{urllib.parse.quote_plus(symbol)}/quote?token={api_key}"
         response = requests.get(url)
         response.raise_for_status()
     except requests.RequestException:
@@ -54,11 +54,48 @@ def lookup(symbol):
         return {
             "name": quote["companyName"],
             "price": float(quote["latestPrice"]),
-            "symbol": quote["symbol"]
+            "symbol": quote["symbol"],
+            "change": float(quote["change"]),
+            "changePercent": float(quote["changePercent"]),
+            "previousClose": float(quote["previousClose"]),
+            # "open": float(quote["iexOpen"]),
+            "week52High": float(quote["week52High"]),
+            "week52Low": float(quote["week52Low"]),
+            "latestVolume": quote["latestVolume"],
+            "marketCap" : quote["marketCap"],
+            "ytdChange": float(quote["ytdChange"]),
+            "peRatio": float(quote["peRatio"]),
         }
     except (KeyError, TypeError, ValueError):
         return None
 
+def lookup_stat(symbol):
+    """Look up quote for symbol."""
+
+    # Contact API
+    try:
+        api_key = os.environ.get("IEX_TOKEN")
+        url = f"https://cloud.iexapis.com/stable/stock/{urllib.parse.quote_plus(symbol)}/stats?token={api_key}"
+        response = requests.get(url)
+        response.raise_for_status()
+    except requests.RequestException:
+        return None
+
+
+    # Parse response
+    try:
+        stat = response.json()
+        return {
+            "beta": float(stat["beta"]),
+            "sharesOutstanding": stat["sharesOutstanding"],
+            "avg10Volume": stat["avg10Volume"],
+            "ttmEPS":stat["ttmEPS"],
+            "ttmDividendRate":stat["ttmDividendRate"],
+            "dividendYield": stat["dividendYield"],
+            "nextEarningsDate":stat["nextEarningsDate"]
+        }
+    except (KeyError, TypeError, ValueError):
+        return None
 
 
 

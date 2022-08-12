@@ -7,7 +7,7 @@ from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import apology, login_required, lookup, usd
+from helpers import apology, login_required, lookup, usd, lookup_stat
 
 # Configure application
 app = Flask(__name__)
@@ -38,8 +38,8 @@ Session(app)
 db = SQL("sqlite:///finance.db")
 
 # Make sure API key is set
-#if not os.environ.get("API_KEY"):
-#    raise RuntimeError("API_KEY not set")
+if not os.environ.get('IEX_TOKEN'):
+   raise RuntimeError("API_KEY not set")
 
 
 @app.route("/")
@@ -188,10 +188,13 @@ def quote():
 
         # Ensure user inputed a valid stock
         quote = lookup(request.form.get("symbol"))
+        stat = lookup_stat(request.form.get("symbol"))
         if quote is None:
             return apology("Could not find the stock", 400)
+        if stat is None:
+            return apology("Could not find the stock", 400)
         #else:
-        return render_template("quoted.html", symbol=quote["symbol"], name=quote["name"], price=usd(quote["price"]))
+        return render_template("quoted.html", symbol=quote["symbol"], name=quote["name"], price=usd(quote["price"]), change=usd(quote["change"]), changePercent=quote['changePercent'], previousClose=usd(quote["previousClose"]), open="bugged", week52High=usd(quote["week52High"]), week52Low=usd(quote["week52Low"]), latestVolume=quote["latestVolume"], marketCap=quote["marketCap"], ytdChange=quote["ytdChange"], peRatio=quote["peRatio"], beta=stat["beta"], sharesOutstanding=stat["sharesOutstanding"], avg10Volume=stat["avg10Volume"], ttmEPS=stat["ttmEPS"], ttmDividendRate=stat["ttmDividendRate"], dividendYield=stat["dividendYield"], nextEarningsDate=stat["nextEarningsDate"])
 
     # Render quote.html if the user used a GET method to visit this route (as by clicking a link or via redirect)
     else:

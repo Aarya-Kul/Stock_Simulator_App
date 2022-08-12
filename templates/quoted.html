@@ -5,5 +5,63 @@
 {% endblock %}
 
 {% block main %}
-    <h3>The current share price for {{name}} ({{symbol}}) is {{price}}</h3>
+    <h4>The current share price for {{name}} ({{symbol}}) is {{price}}. Change: {{change}} ({{changePercent}}%) </h4>
+    
+    <div style="padding: 35px;">
+        <table class="center">
+            <caption>Your Stock Quote</caption>
+            <thead>
+                <tr>
+                    <th class="header" colspan="4">Quote Summary</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th class="header">Previous Close</td>
+                    <td>{{previousClose}}</td>
+                    <th class="header">Beta</td>
+                    <td>{{beta}}</td>
+                </tr>
+                <tr>
+                    <th class="header">Open</td>
+                    <td>{{open}}</td>
+                    <th class="header">Shares Outstanding</td>
+                    <td>{{sharesOutstanding}}</td>
+                </tr>
+                <tr>
+                    <th class="header">Year's Range</td>
+                    <td>{{ week52Low }} - {{ week52High }}</td>
+                    <th class="header">Average 10-day Vol</td>
+                    <td>{{avg10Volume}}</td>
+                </tr>
+                <tr>
+                    <th class="header">Latest Volume</td>
+                    <td>{{latestVolume}}</td>
+                    <th class="header">EPS (TTM)</td>
+                    <td>{{ttmEPS}}</td>
+                </tr>
+                <tr>
+                    <th class="header">Market Cap</td>
+                    <td>{{marketCap}}</td>
+                    <th class="header">Dividend Rate (TTM)</td>
+                    <td>{{ttmDividendRate}}</td>
+                </tr>
+                <tr>
+                    <th class="header">YTD Change</td>
+                    <td>{{ ytdChange }}</td>
+                    <th class="header">Dividend Yield</td>
+                    <td>{{dividendYield}}</td>
+                </tr>
+                <tr>
+                    <th class="header">PE Ratio (TTM)</td>
+                    <td>{{ peRatio }}</td>
+                    <th class="header">Next Earnings Date</td>
+                    <td>{{nextEarningsDate}}</td>
+                </tr>
+            </tbody>
+    
+        </table>
+    </div>
+    
+
 {% endblock %}
