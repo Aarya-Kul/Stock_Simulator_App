@@ -9,7 +9,7 @@ from werkzeug.exceptions import default_exceptions, HTTPException, InternalServe
 from werkzeug.security import check_password_hash, generate_password_hash
 import requests
 
-from helpers import apology, login_required, lookup, usd, lookup_stat
+from helpers import apology, login_required, lookup, usd, lookup_stat, lookup_news
 
 # Configure application
 app = Flask(__name__)
@@ -199,6 +199,24 @@ def logout():
     # Redirect user to login form
     return redirect("/")
 
+@app.route("/news", methods=["GET", "POST"])
+@login_required
+def news():
+    """Get stock quote."""
+
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+
+        # Ensure user inputed a valid stock
+        news = lookup_news(request.form.get("symbol"))
+        if news is None:
+            return apology("Could not find the stock", 400)
+        #else:
+        return render_template("newslist.html", news=news)
+
+    # Render quote.html if the user used a GET method to visit this route (as by clicking a link or via redirect)
+    else:
+        return render_template("news.html")
 
 @app.route("/quote", methods=["GET", "POST"])
 @login_required

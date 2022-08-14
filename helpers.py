@@ -80,19 +80,32 @@ def lookup_stat(symbol):
     except requests.RequestException:
         return None
 
+def lookup_news(symbol):
+    """Look up quote for symbol."""
+
+    # Contact API
+    try:
+        api_key = os.environ.get("IEX_TOKEN")
+        url = f"https://cloud.iexapis.com/stable/stock/{urllib.parse.quote_plus(symbol)}/news/last/20?token={api_key}"
+        response = requests.get(url)
+        response.raise_for_status()
+    except requests.RequestException:
+        return None
+
 
     # Parse response
     try:
-        stat = response.json()
-        return {
-            "beta": float(stat["beta"]),
-            "sharesOutstanding": stat["sharesOutstanding"],
-            "avg10Volume": stat["avg10Volume"],
-            "ttmEPS":stat["ttmEPS"],
-            "ttmDividendRate":stat["ttmDividendRate"],
-            "dividendYield": stat["dividendYield"],
-            "nextEarningsDate":stat["nextEarningsDate"]
-        }
+        list = []
+        news = response.json()
+        for each in news:
+            headline = {
+            "url": each["url"],
+            "headline": each["headline"],
+            "source": each["source"],
+            "summary":each["summary"],
+            }
+            list.append(headline)
+        return list
     except (KeyError, TypeError, ValueError):
         return None
 
