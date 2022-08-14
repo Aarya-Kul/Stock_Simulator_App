@@ -4,7 +4,34 @@
     Log In
 {% endblock %}
 
+{% block recaptcha %}
+<script src="https://www.google.com/recaptcha/api.js"></script>
+<style>
+    /* already defined in bootstrap4 */
+    .text-xs-center {
+        text-align: center;
+    }
+
+    .g-recaptcha {
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
 {% block main %}
+    <!-- <p>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+     {% for message in messages %}
+       <div class="alert alert-primary">
+        <strong>{{ message }}</strong>
+      </div>
+     {% endfor %}
+      {% endif %}
+    {% endwith %}
+   </p> -->
+    <div>
+    </div>
     <form action="/login" method="post">
         <div class="form-group">
             <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text">
@@ -12,6 +39,8 @@
         <div class="form-group">
             <input class="form-control" name="password" placeholder="Password" type="password">
         </div>
+        <div class="text-xs-center"><div class="g-recaptcha" style="margin:auto; padding:10px;" data-sitekey="{{ sitekey }}"></div> <br/> </div>
+        
         <button class="btn btn-primary" type="submit">Log In</button>
     </form>
 {% endblock %}

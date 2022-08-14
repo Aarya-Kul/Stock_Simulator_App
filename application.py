@@ -1,11 +1,13 @@
 import os
 from datetime import datetime, timedelta
 from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, json
+from flask_wtf import FlaskForm, RecaptchaField
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
+import requests
 
 from helpers import apology, login_required, lookup, usd, lookup_stat
 
@@ -15,6 +17,8 @@ app = Flask(__name__)
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
+# Setup recaptcha
+app.config['SECRET_KEY'] = os.environ.get("RECAPTCHA_SECRETKEY")
 
 # Ensure responses aren't cached
 @app.after_request
@@ -130,6 +134,15 @@ def history():
 
     return render_template("history.html", history=history)
 
+def is_human(captcha_response):
+    """ Validating recaptcha response from google server
+        Returns True captcha test passed for submitted form else returns False.
+    """
+    secret = os.environ.get("RECAPTCHA_SECRETKEY")
+    payload = {'response':captcha_response, 'secret':secret}
+    response = requests.post("https://www.google.com/recaptcha/api/siteverify", payload)
+    response_text = json.loads(response.text)
+    return response_text['success']
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -137,7 +150,7 @@ def login():
 
     # Forget any user_id
     session.clear()
-
+    sitekey = os.environ.get("RECAPTCHA_SITEKEY")
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
 
@@ -149,22 +162,31 @@ def login():
         elif not request.form.get("password"):
             return apology("must provide password", 403)
 
-        # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
+        captcha_response = request.form['g-recaptcha-response']
+        if is_human(captcha_response):
+            # Process request here
+            status = "Detail submitted successfully."
+                    # Query database for username
+            rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
 
-        # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            return apology("invalid username and/or password", 403)
+            # Ensure username exists and password is correct
+            if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
+                return apology("invalid username and/or password", 403)
 
-        # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
+            # Remember which user has logged in
+            session["user_id"] = rows[0]["id"]
 
-        # Redirect user to home page
-        return redirect("/")
+            # Redirect user to home page
+            return redirect("/")
+        else:
+             # Log invalid attempts
+            status = "Sorry ! Please Check Im not a robot."
+            return render_template("login.html", sitekey=sitekey)
+
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
-        return render_template("login.html")
+        return render_template("login.html", sitekey=sitekey)
 
 
 @app.route("/logout")

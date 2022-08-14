@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Today's News
+{% endblock %}
+
+{% block main %}
+    <form action="/news" method="post">
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" name="symbol" placeholder="Symbol" type="text">
+        </div>
+        <button class="btn btn-primary" type="submit">Find News</button>
+    </form>
+
+{% endblock %}
