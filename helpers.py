@@ -39,7 +39,7 @@ def lookup(symbol):
 
     # Contact API
     try:
-        api_key = os.environ.get("IEX_TOKEN")
+        api_key = os.environ.get('IEX_TOKEN')
         url = f"https://cloud.iexapis.com/stable/stock/{urllib.parse.quote_plus(symbol)}/quote?token={api_key}"
         response = requests.get(url)
         response.raise_for_status()
@@ -73,7 +73,7 @@ def lookup_stat(symbol):
 
     # Contact API
     try:
-        api_key = os.environ.get("IEX_TOKEN")
+        api_key = os.environ.get('IEX_TOKEN')
         url = f"https://cloud.iexapis.com/stable/stock/{urllib.parse.quote_plus(symbol)}/stats?token={api_key}"
         response = requests.get(url)
         response.raise_for_status()
@@ -86,7 +86,7 @@ def lookup_news(symbol):
     # Contact API
     try:
         api_key = os.environ.get("IEX_TOKEN")
-        url = f"https://cloud.iexapis.com/stable/stock/{urllib.parse.quote_plus(symbol)}/news/last/20?token={api_key}"
+        url = f"https://cloud.iexapis.com/stable/stock/{urllib.parse.quote_plus(symbol)}/news/last/12?token={api_key}"
         response = requests.get(url)
         response.raise_for_status()
     except requests.RequestException:
